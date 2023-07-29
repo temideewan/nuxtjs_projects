@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Gender, Popularity, Length, names } from "@/data";
-interface OptionsState {
+export interface OptionsState {
   gender: Gender;
   popularity: Popularity;
   length: Length;
@@ -11,6 +11,11 @@ const options = reactive<OptionsState>({
   popularity: Popularity.UNIQUE,
 });
 const selectedNames = ref<string[]>([]);
+const removeName = (index: number) => {
+  const filteredNames = [...selectedNames.value]
+  filteredNames.splice(index, 1);
+  selectedNames.value = filteredNames;
+}
 const computeSelectedNames = () => {
   const filteredNames = names
     .filter((name) => name.gender === options.gender)
@@ -38,6 +43,7 @@ const optionsArray = [
     buttons: [Length.SHORT, Length.ALL, Length.LONG]
   },
 ]
+
 </script>
 
 <template>
@@ -49,12 +55,19 @@ const optionsArray = [
       <button @click="computeSelectedNames" class="primary">Find Names</button>
     </div>
     <div class="card-container">
-      <div class="card" v-for="name in selectedNames" :key="name">
+      <!-- <div class="card" v-for="name in selectedNames" :key="name">
         <h4>
           {{ name }}
         </h4>
         <p>X</p>
-      </div>
+      </div> -->
+      <CardName 
+      v-for="(name, index) in selectedNames" 
+      :key="name" 
+      :name="name"
+      :index="index"
+      @remove="() => removeName(index)"
+      />
     </div>
   </div>
 </template>
